@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Profile</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .profile-card {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            color: #4f46e5;
+        }
+
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        #faqAnswer {
+            background: #eef2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Dark theme */
+        body.dark {
+            background: #111827;
+            color: #f9fafb;
+        }
+
+        body.dark .profile-card {
+            background: #1f2937;
+        }
+
+        body.dark h1 {
+            color: #a5b4fc;
+        }
+
+        body.dark #faqAnswer {
+            background: #374151;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="profile-card">
+        <h1 id="name">Riya</h1>
+
+        <p>
+            Hello! I am learning web development and JavaScript.
+            Welcome to my interactive profile.
+        </p>
+
+        <div class="buttons">
+            <button id="themeBtn">Toggle Theme</button>
+
+            <button id="likeBtn">
+                Like (<span id="likes">0</span>)
+            </button>
+        </div>
+
+        <button id="faqBtn" aria-expanded="false">
+            What do I do?
+        </button>
+
+        <p id="faqAnswer" class="hidden">
+            I am learning JavaScript!
+        </p>
+    </main>
+
+    <script>
+        const themeBtn = document.querySelector("#themeBtn");
+        const likeBtn = document.querySelector("#likeBtn");
+        const likesEl = document.querySelector("#likes");
+        const faqBtn = document.querySelector("#faqBtn");
+        const faqAnswer = document.querySelector("#faqAnswer");
+
+        let likes = 0;
+
+        // Toggle light and dark themes
+        themeBtn.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+        });
+
+        // Increase like counter
+        likeBtn.addEventListener("click", () => {
+            likes++;
+            likesEl.textContent = likes;
+        });
+
+        // Show or hide FAQ answer
+        faqBtn.addEventListener("click", () => {
+            const open = faqBtn.getAttribute("aria-expanded") === "true";
+
+            faqBtn.setAttribute("aria-expanded", String(!open));
+            faqAnswer.classList.toggle("hidden");
+        });
+    </script>
+</body>
+</html>
