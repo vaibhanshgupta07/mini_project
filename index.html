@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini To-Do App</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #4f46e5;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #todoList {
+            list-style: none;
+        }
+
+        #todoList li {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        #todoList li span {
+            flex: 1;
+            overflow-wrap: anywhere;
+        }
+
+        #todoList li.done span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .complete {
+            background: #16a34a;
+        }
+
+        .edit {
+            background: #f59e0b;
+        }
+
+        .delete {
+            background: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <h1>My To-Do List</h1>
+
+        <form id="todoForm">
+            <input id="todoInput" type="text" placeholder="New task" required>
+            <button type="submit">Add</button>
+        </form>
+
+        <div class="filters">
+            <button type="button" data-filter="all">All</button>
+            <button type="button" data-filter="active">Active</button>
+            <button type="button" data-filter="done">Done</button>
+        </div>
+
+        <ul id="todoList"></ul>
+    </main>
+
+    <script>
+        let todos = [];
+        let filter = "all";
+        let nextId = 1;
+
+        const form = document.querySelector("#todoForm");
+        const input = document.querySelector("#todoInput");
+        const list = document.querySelector("#todoList");
+
+        // Render tasks
+        function render() {
+            list.replaceChildren();
+
+            const visible = todos.filter(t =>
+                filter === "all" ? true :
+                filter === "done" ? t.done : !t.done
+            );
+
+            if (visible.length === 0) {
+                list.textContent = "Nothing to show.";
+                return;
+            }
+
+            visible.forEach(t => {
+                const li = document.createElement("li");
+                li.dataset.id = t.id;
+
+                if (t.done) {
+                    li.classList.add("done");
+                }
+
+                const text = document.createElement("span");
+                text.textContent = t.text;
+
+                const doneBtn = document.createElement("button");
+                doneBtn.textContent = t.done ? "Undo" : "Complete";
+                doneBtn.className = "complete";
+
+                const editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.className = "edit";
+
+                const delBtn = document.createElement("button");
+                delBtn.textContent = "Delete";
+                delBtn.className = "delete";
+
+                li.append(text, doneBtn, editBtn, delBtn);
+                list.append(li);
+            });
+        }
+
+        // Add task
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            todos.push({
+                id: nextId++,
+                text: text,
+                done: false
+            });
+
+            form.reset();
+            render();
+        });
+
+        // Complete, edit, or delete tasks
+        list.addEventListener("click", (e) => {
+            const li = e.target.closest("li");
+
+            if (!li) return;
+
+            const id = Number(li.dataset.id);
+
+            if (e.target.matches(".complete")) {
+                todos = todos.map(t =>
+                    t.id === id ? { ...t, done: !t.done } : t
+                );
+            } else if (e.target.matches(".edit")) {
+                const current = todos.find(t => t.id === id);
+                const newText = prompt("Edit task:", current.text);
+
+                if (newText && newText.trim()) {
+                    todos = todos.map(t =>
+                        t.id === id ? { ...t, text: newText.trim() } : t
+                    );
+                }
+            } else if (e.target.matches(".delete")) {
+                todos = todos.filter(t => t.id !== id);
+            } else {
+                return;
+            }
+
+            render();
+        });
+
+        // Filter tasks
+        document.addEventListener("click", (e) => {
+            if (e.target.dataset.filter) {
+                filter = e.target.dataset.filter;
+                render();
+            }
+        });
+
+        render();
+    </script>
+</body>
+</html>
